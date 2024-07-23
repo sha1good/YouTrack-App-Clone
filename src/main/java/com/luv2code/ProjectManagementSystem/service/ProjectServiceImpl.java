@@ -46,12 +46,12 @@ public class ProjectServiceImpl implements ProjectService {
     public List<Project> getProjectByTeam(User user, String category, String tags) throws Exception {
 
         List<Project> projects = projectRepository.findByTeamContainingOrOwner(user, user);
-        if(category != null){
-             projects = projects.stream().filter(project -> project.getCategory().equals(category)).collect(Collectors.toList());
+        if (category != null) {
+            projects = projects.stream().filter(project -> project.getCategory().equals(category)).collect(Collectors.toList());
         }
 
-        if(tags != null){
-             projects = projects.stream().filter(project -> project.getTags().contains(tags)).collect(Collectors.toList());
+        if (tags != null) {
+            projects = projects.stream().filter(project -> project.getTags().contains(tags)).collect(Collectors.toList());
         }
         return projects;
     }
@@ -59,16 +59,16 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Project getProjectById(Long projctId) throws Exception {
         Optional<Project> optionalProject = projectRepository.findById(projctId);
-        if(optionalProject.isEmpty()){
-               throw new Exception("Project Not Found!");
+        if (optionalProject.isEmpty()) {
+            throw new Exception("Project Not Found!");
         }
         return optionalProject.get();
     }
 
     @Override
     public void deleteProject(Long projectId, Long userId) throws Exception {
-     userService.findUserById(userId);
-     projectRepository.deleteById(projectId);
+        userService.findUserById(userId);
+        projectRepository.deleteById(projectId);
     }
 
     @Override
@@ -84,23 +84,27 @@ public class ProjectServiceImpl implements ProjectService {
     public void addUserToProject(Long projectId, Long userId) throws Exception {
         Project project = getProjectById(projectId);
         User user = userService.findUserById(userId);
-        if(!project.getTeam().contains(user)){
-              project.getTeam().add(user);
-              project.getChat().getUser().add(user);
+        for (User member : project.getTeam()) {
+            if (member.getId().equals(user.getId())) {
+                return;
+            }
+
         }
+        project.getTeam().add(user);
+        project.getChat().getUser().add(user);
         projectRepository.save(project);
     }
 
     @Override
     public void removeUserFromProject(Long projectId, Long userId) throws Exception {
-         Project project = getProjectById(projectId);
-         User user = userService.findUserById(userId);
+        Project project = getProjectById(projectId);
+        User user = userService.findUserById(userId);
 
-         if(project.getTeam().contains(user)){
-               project.getTeam().remove(user);
-               project.getChat().getUser().remove(user);
-         }
-         projectRepository.delete(project);
+        if (project.getTeam().contains(user)) {
+            project.getTeam().remove(user);
+            project.getChat().getUser().remove(user);
+        }
+        projectRepository.delete(project);
     }
 
     @Override
@@ -111,8 +115,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<Project> searchProjects(String keyword, User user) throws Exception {
-       // String partialName = "%" + keyword + "%";
-        return  projectRepository.findByNameContainingAndTeamContaining(keyword, user);
+        // String partialName = "%" + keyword + "%";
+        return projectRepository.findByNameContainingAndTeamContaining(keyword, user);
     }
 
 

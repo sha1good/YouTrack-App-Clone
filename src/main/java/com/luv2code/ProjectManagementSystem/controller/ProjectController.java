@@ -49,9 +49,11 @@ public class ProjectController {
         return new ResponseEntity<>(project, HttpStatus.OK);
     }
 
-    @PostMapping
+    @PostMapping()
     public ResponseEntity<Project> createProject(
             @RequestHeader("Authorization") String token, @RequestBody Project project) throws Exception {
+          //System.out.println(token);
+          //System.out.println("Hello from Create Project!");
         User user = userService.findUserByToken(token);
         Project createdProject = projectService.createProject(project, user);
         return new ResponseEntity<>(createdProject, HttpStatus.CREATED);

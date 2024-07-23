@@ -38,7 +38,7 @@ public class PaymentController {
             amount = amount * 12;
             amount = (int) (amount * 0.7);
         }
-
+    //System.out.println("SubType===== " +subType);
         RazorpayClient razorpayClient = new RazorpayClient(apiKey, apiSecret);
         JSONObject paymentLinkReq = new JSONObject();
         paymentLinkReq.put("amount", amount);
